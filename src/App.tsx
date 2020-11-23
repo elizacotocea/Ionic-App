@@ -2,8 +2,6 @@ import React from 'react';
 import { Redirect, Route } from 'react-router-dom';
 import { IonApp, IonRouterOutlet } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import Home from './pages/Home';
-
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
 
@@ -22,13 +20,25 @@ import '@ionic/react/css/display.css';
 
 /* Theme variables */
 import './theme/variables.css';
+import {PrivateRoute} from "./auth/PrivateRoute";
+import {Login} from "./auth/Login";
+import {AuthProvider} from "./auth/AuthProvider";
+import {CitybreakList, CitybreakEdit} from "./citybreak";
+import {CitybreakProvider} from "./citybreak/CitybreakProvider";
 
 const App: React.FC = () => (
   <IonApp>
     <IonReactRouter>
       <IonRouterOutlet>
-        <Route path="/home" component={Home} exact={true} />
-        <Route exact path="/" render={() => <Redirect to="/home" />} />
+          <AuthProvider>
+              <Route path="/login" component={Login} exact={true}/>
+              <CitybreakProvider>
+                  <PrivateRoute path="/citybreaks" component={CitybreakList} exact={true}/>
+                  <PrivateRoute path="/citybreak" component={CitybreakEdit} exact={true}/>
+                  <PrivateRoute path="/citybreak/:id" component={CitybreakEdit} exact={true}/>
+              </CitybreakProvider>
+              <Route exact path="/" render={() => <Redirect to="/citybreaks"/>}/>
+          </AuthProvider>
       </IonRouterOutlet>
     </IonReactRouter>
   </IonApp>
