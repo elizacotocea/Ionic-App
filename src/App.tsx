@@ -1,7 +1,7 @@
 import React from 'react';
-import { Redirect, Route } from 'react-router-dom';
-import { IonApp, IonRouterOutlet } from '@ionic/react';
-import { IonReactRouter } from '@ionic/react-router';
+import {Redirect, Route} from 'react-router-dom';
+import {IonApp, IonRouterOutlet} from '@ionic/react';
+import {IonReactRouter} from '@ionic/react-router';
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
 
@@ -20,28 +20,28 @@ import '@ionic/react/css/display.css';
 
 /* Theme variables */
 import './theme/variables.css';
-import {PrivateRoute} from "./auth/PrivateRoute";
-import {Login} from "./auth/Login";
-import {AuthProvider} from "./auth/AuthProvider";
-import {CitybreakList, CitybreakEdit} from "./citybreak";
-import {CitybreakProvider} from "./citybreak/CitybreakProvider";
+import {PrivateRoute} from "./auth";
+import {Login} from "./auth";
+import {AuthProvider} from "./auth";
+import {CityBreakList, CityBreakEdit} from "./cityBreak";
+import {CityBreakProvider} from "./cityBreak/CityBreakProvider";
 
 const App: React.FC = () => (
-  <IonApp>
-    <IonReactRouter>
-      <IonRouterOutlet>
-          <AuthProvider>
-              <Route path="/login" component={Login} exact={true}/>
-              <CitybreakProvider>
-                  <PrivateRoute path="/citybreaks" component={CitybreakList} exact={true}/>
-                  <PrivateRoute path="/citybreak" component={CitybreakEdit} exact={true}/>
-                  <PrivateRoute path="/citybreak/:id" component={CitybreakEdit} exact={true}/>
-              </CitybreakProvider>
-              <Route exact path="/" render={() => <Redirect to="/citybreaks"/>}/>
-          </AuthProvider>
-      </IonRouterOutlet>
-    </IonReactRouter>
-  </IonApp>
+    <IonApp>
+        <IonReactRouter>
+            <IonRouterOutlet>
+                <AuthProvider>
+                    <Route path="/login" component={Login} exact={true}/>
+                    <CityBreakProvider>
+                        <PrivateRoute path="/cityBreaks" component={CityBreakList} exact={true}/>
+                        <PrivateRoute path="/cityBreak" component={CityBreakEdit} exact={true}/>
+                        <PrivateRoute path="/cityBreak/:id" component={CityBreakEdit} exact={true}/>
+                    </CityBreakProvider>
+                    <Route exact path="/" render={() => <Redirect to="/cityBreaks"/>}/>
+                </AuthProvider>
+            </IonRouterOutlet>
+        </IonReactRouter>
+    </IonApp>
 );
 
 export default App;

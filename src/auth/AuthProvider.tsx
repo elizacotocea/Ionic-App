@@ -1,10 +1,10 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import PropTypes from "prop-types";
-import { getLogger } from "../core";
-import { login as loginApi } from "./authApi";
-import { Plugins } from "@capacitor/core";
+import {getLogger} from "../core";
+import {login as loginApi} from "./authApi";
+import {Plugins} from "@capacitor/core";
 
-const { Storage } = Plugins;
+const {Storage} = Plugins;
 
 const log = getLogger("AuthProvider");
 
@@ -21,6 +21,7 @@ export interface AuthState {
     username?: string;
     password?: string;
     token: string;
+    _id: string;
 }
 
 const initialState: AuthState = {
@@ -29,6 +30,7 @@ const initialState: AuthState = {
     authenticationError: null,
     pendingAuthentication: false,
     token: "",
+    _id: "",
 };
 
 export const AuthContext = React.createContext<AuthState>(initialState);
@@ -37,7 +39,7 @@ interface AuthProviderProps {
     children: PropTypes.ReactNodeLike;
 }
 
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
     const [state, setState] = useState<AuthState>(initialState);
     const {
         isAuthenticated,
@@ -45,6 +47,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         authenticationError,
         pendingAuthentication,
         token,
+        _id
     } = state;
     const login = useCallback<LoginFn>(loginCallback, []);
     const logout = useCallback<LogoutFn>(logoutCallback, []);
@@ -56,6 +59,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         isAuthenticating,
         authenticationError,
         token,
+        _id
     };
     log("render");
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -69,14 +73,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             password,
         });
     }
+
     function logoutCallback(): void {
         log("logout");
         setState({
             ...state,
             isAuthenticated: false,
             token: "",
+            _id: "",
         });
         (async () => {
+            // await Storage.remove({ key: "user" });
             await Storage.clear();
         })();
     }
@@ -89,12 +96,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         };
 
         async function authenticate() {
-            var tokenStorage = await Storage.get({ key: "user" });
-            console.log("token "+tokenStorage.value);
+            var tokenStorage = await Storage.get({key: "user"});
+            var _idStorage = await Storage.get({key: "_id"});
+            console.log("token " + tokenStorage.value);
             if (tokenStorage.value) {
                 setState({
                     ...state,
                     token: tokenStorage.value,
+                    _id: _idStorage.value!,
                     pendingAuthentication: false,
                     isAuthenticated: true,
                     isAuthenticating: false,
@@ -110,16 +119,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                     ...state,
                     isAuthenticating: true,
                 });
-                const { username, password } = state;
-                const { token } = await loginApi(username, password);
+                const {username, password} = state;
+                const {token, _id} = await loginApi(username, password);
                 if (canceled) {
                     return;
                 }
                 log("authenticate succeeded");
-                await Storage.set({ key: "user", value: token });
+                await Storage.set({key: "user", value: token});
+                await Storage.set({key: "_id", value: _id})
                 setState({
                     ...state,
                     token,
+                    _id,
                     pendingAuthentication: false,
                     isAuthenticated: true,
                     isAuthenticating: false,

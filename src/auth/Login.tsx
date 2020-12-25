@@ -1,9 +1,9 @@
-import React, { useContext, useState } from 'react';
-import { Redirect } from 'react-router-dom';
-import { RouteComponentProps } from 'react-router';
-import { IonButton, IonContent, IonHeader, IonInput, IonLoading, IonPage, IonTitle, IonToolbar } from '@ionic/react';
-import { AuthContext } from './AuthProvider';
-import { getLogger } from '../core';
+import React, {useContext, useState} from 'react';
+import {Redirect} from 'react-router-dom';
+import {RouteComponentProps} from 'react-router';
+import {IonButton, IonContent, IonHeader, IonInput, IonLoading, IonPage, IonTitle, IonToolbar} from '@ionic/react';
+import {AuthContext} from './AuthProvider';
+import {getLogger} from '../core';
 
 const log = getLogger('Login');
 
@@ -12,17 +12,17 @@ interface LoginState {
     password?: string;
 }
 
-export const Login: React.FC<RouteComponentProps> = ({ history }) => {
-    const { isAuthenticated, isAuthenticating, login, authenticationError } = useContext(AuthContext);
+export const Login: React.FC<RouteComponentProps> = () => {
+    const {isAuthenticated, isAuthenticating, login, authenticationError} = useContext(AuthContext);
     const [state, setState] = useState<LoginState>({});
-    const { username, password } = state;
+    const {username, password} = state;
     const handleLogin = () => {
         log('handleLogin...');
         login?.(username, password);
     };
     log('render');
     if (isAuthenticated) {
-        return <Redirect to={{ pathname: '/' }} />
+        return <Redirect to={{pathname: '/'}}/>
     }
     return (
         <IonPage>
@@ -40,6 +40,7 @@ export const Login: React.FC<RouteComponentProps> = ({ history }) => {
                         username: e.detail.value || ''
                     })}/>
                 <IonInput
+                    type="password"
                     placeholder="Password"
                     value={password}
                     onIonChange={e => setState({
